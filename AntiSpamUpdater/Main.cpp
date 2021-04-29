@@ -3,10 +3,13 @@
 #include <string>
 #include <exception>
 #include <Windows.h>
-#include <vector>
+#include <tchar.h>
+#include <urlmon.h>
 
 using namespace std;
 namespace fs = std::filesystem;
+
+#pragma comment (lib,"urlmon.lib")
 
 std::wstring GetStringValueFromHKLM(const std::wstring& regSubKey, const std::wstring regValue) {
 	size_t bufferSize = 0xFFF;
@@ -64,10 +67,12 @@ int main()
 	std::wstring regSubKey;
 	regSubKey = L"SOFTWARE\\WOW6432Node\\Blizzard Entertainment\\World of Warcraft\\";
 
-	std::wstring regValue(L"InstallPath");
+	std::wstring regValue (L"InstallPath");
 	std::wstring classic = L"_classic_";
 	std::wstring retail = L"_retail_";
 	std::wstring valueFromRegistry;
+	std::wstring download_url = L"https://gist.githubusercontent.com/thewheat/bb67f632950c7feaf4b8a2f3febbd98a/raw/02feb16f6fac5edf8e6df7e287dbb08b53cc38c1/Test.txt";
+	
 
 	try
 	{
@@ -85,18 +90,18 @@ int main()
 		std::exit(0);
 	}
 
-
+	std::wstring neuePfadFurWTF = valueFromRegistry + L"WTF\\Account\\";
+	std::wstring savepath = neuePfadFurWTF;
 	if (valueFromRegistry.find(retail) != wstring::npos)
 	{
-		std::wstring neuePfadFurWTF = valueFromRegistry + L"WTF\\Account\\";
-
 		for (const auto& entry : fs::directory_iterator(neuePfadFurWTF))
-			std::wcout << entry.path() << std::endl;
+			std::wcout << "Debug : " << entry.path() << std::endl;
 
 		std::wcout << "\n" << std::endl;
 	}
 
+	URLDownloadToFile(NULL, download_url.c_str(), savepath.c_str(), 0, NULL);
+
 	std::wcout << "Zuletzt benutzt WoW Version : " << valueFromRegistry << "\n" << std::endl;
-	
 	std::getchar();
 }
